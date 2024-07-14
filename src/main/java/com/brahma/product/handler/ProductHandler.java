@@ -1,7 +1,6 @@
 package com.brahma.product.handler;
 
 import com.brahma.product.bean.Product;
-import com.brahma.product.bean.ProductResponse;
 import com.brahma.product.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +28,18 @@ public class ProductHandler {
                     LOGGER.info("Saved product details: {}", savedProduct);
                     return ServerResponse.ok().bodyValue(savedProduct);
                 })
+                .onErrorResume(e -> {
+                    LOGGER.error("Error processing request: {}", e.getMessage());
+                    return ServerResponse.status(500).bodyValue("Internal Server Error");
+                });
+    }
+
+
+    public Mono<ServerResponse> getProductById(final ServerRequest serverRequest) {
+
+        return productService.getProductById(serverRequest.pathVariable("id"))
+                .flatMap(product -> ServerResponse.ok().bodyValue(product))
+                .switchIfEmpty(ServerResponse.notFound().build())
                 .onErrorResume(e -> {
                     LOGGER.error("Error processing request: {}", e.getMessage());
                     return ServerResponse.status(500).bodyValue("Internal Server Error");

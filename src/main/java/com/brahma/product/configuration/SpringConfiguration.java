@@ -11,8 +11,8 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import static com.brahma.product.ProductConstants.CREATE_PRODUCT_PATH;
-import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
-import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
+import static com.brahma.product.ProductConstants.GET_PRODUCT_BY_ID;
+import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Component
@@ -30,6 +30,7 @@ public class SpringConfiguration {
     @Bean
     private RouterFunction<ServerResponse> compositeRout(){
 
-        return route(POST(CREATE_PRODUCT_PATH).and(accept(MediaType.APPLICATION_NDJSON)), (HandlerFunction<ServerResponse>) productHandler::createProduct);
+        return route(POST(CREATE_PRODUCT_PATH).and(accept(MediaType.APPLICATION_NDJSON)), productHandler::createProduct)
+                .andRoute(GET(GET_PRODUCT_BY_ID),productHandler::getProductById);
     }
 }

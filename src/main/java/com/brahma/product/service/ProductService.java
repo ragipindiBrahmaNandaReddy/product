@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 
 @Service
 public class ProductService {
@@ -25,5 +27,11 @@ public class ProductService {
 
     private void validateProduct(Product product) {
 
+    }
+
+    public Mono<Product> getProductById(String id) {
+        Optional<Product> byId = repository.findById(Long.valueOf(id));
+        Product product = byId.get();
+        return Mono.just(product);
     }
 }
