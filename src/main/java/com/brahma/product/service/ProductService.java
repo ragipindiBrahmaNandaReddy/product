@@ -34,4 +34,20 @@ public class ProductService {
         Product product = byId.get();
         return Mono.just(product);
     }
+
+    public Mono<Product> updateProduct(Product product) {
+
+        Optional<Product> byId = repository.findById(product.getProductId());
+        Product updateProduct = byId.get();
+
+        updateProduct.setProductQuantity(product.getProductQuantity());
+        updateProduct.setProductDescription(product.getProductDescription());
+        repository.save(updateProduct);
+        return Mono.just(updateProduct);
+    }
+
+    public Mono<ProductResponse> deleteProductById(long id ) {
+        repository.deleteById(id);
+        return Mono.just(new ProductResponse(200,"Product deleted with id "+id)) ;
+    }
 }

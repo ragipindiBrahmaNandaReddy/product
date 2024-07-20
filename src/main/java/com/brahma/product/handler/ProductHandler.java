@@ -45,4 +45,32 @@ public class ProductHandler {
                     return ServerResponse.status(500).bodyValue("Internal Server Error");
                 });
     }
+
+
+    public Mono<ServerResponse> updateProduct(ServerRequest serverRequest) {
+        return serverRequest.bodyToMono(Product.class)
+                .flatMap(product -> {
+                    LOGGER.info("Received product details: {}", product);
+                    return productService.updateProduct(product);
+                })
+                .flatMap(savedProduct -> {
+                    LOGGER.info("Saved product details: {}", savedProduct);
+                    return ServerResponse.ok().bodyValue(savedProduct);
+                })
+                .onErrorResume(e -> {
+                    LOGGER.error("Error processing request: {}", e.getMessage());
+                    return ServerResponse.status(500).bodyValue("Internal Server Error");
+                });
+    }
+
+    public Mono<ServerResponse> deleteProductById(final ServerRequest serverRequest) {
+
+        return productService.deleteProductById(Long.parseLong(serverRequest.pathVariable("id")))
+                .flatMap(product -> ServerResponse.ok().bodyValue(product))
+                .switchIfEmpty(ServerResponse.notFound().build())
+                .onErrorResume(e -> {
+                    LOGGER.error("Error processing request: {}", e.getMessage());
+                    return ServerResponse.status(500).bodyValue("Internal Server Error");
+                });
+    }
 }

@@ -6,12 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.server.HandlerFunction;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import static com.brahma.product.ProductConstants.CREATE_PRODUCT_PATH;
-import static com.brahma.product.ProductConstants.GET_PRODUCT_BY_ID;
+import static com.brahma.product.ProductConstants.*;
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
@@ -31,6 +29,8 @@ public class SpringConfiguration {
     private RouterFunction<ServerResponse> compositeRout(){
 
         return route(POST(CREATE_PRODUCT_PATH).and(accept(MediaType.APPLICATION_NDJSON)), productHandler::createProduct)
-                .andRoute(GET(GET_PRODUCT_BY_ID),productHandler::getProductById);
+                .andRoute(GET(GET_PRODUCT_BY_ID_PATH),productHandler::getProductById)
+                .andRoute(PUT(UPDATE_PRODUCT_PATH).and(accept(MediaType.APPLICATION_NDJSON)), productHandler::updateProduct)
+                .andRoute(DELETE(DELETE_PRODUCT_PATH), productHandler::updateProduct);
     }
 }
