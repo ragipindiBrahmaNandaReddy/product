@@ -10,4 +10,6 @@ public interface ProductConstants {
       static String UPDATE_PRODUCT_PATH = "api/v1/product/update";
 
       static String DELETE_PRODUCT_PATH = "api/v1/product/delete/{id}";
+
+      static String GET_ALL_PRODUCT_PATH = "api/v1/product/all/products";
 }

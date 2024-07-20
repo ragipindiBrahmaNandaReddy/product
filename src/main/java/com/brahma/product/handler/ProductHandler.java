@@ -1,6 +1,8 @@
 package com.brahma.product.handler;
 
 import com.brahma.product.bean.Product;
+import com.brahma.product.bean.ProductResponse;
+import com.brahma.product.exception.ProductAppException;
 import com.brahma.product.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,22 +30,17 @@ public class ProductHandler {
                     LOGGER.info("Saved product details: {}", savedProduct);
                     return ServerResponse.ok().bodyValue(savedProduct);
                 })
-                .onErrorResume(e -> {
-                    LOGGER.error("Error processing request: {}", e.getMessage());
-                    return ServerResponse.status(500).bodyValue("Internal Server Error");
-                });
+                .onErrorResume(Mono::error);
+
     }
 
 
     public Mono<ServerResponse> getProductById(final ServerRequest serverRequest) {
 
-        return productService.getProductById(serverRequest.pathVariable("id"))
+        return productService.getProductById(Integer.parseInt(serverRequest.pathVariable("id")))
                 .flatMap(product -> ServerResponse.ok().bodyValue(product))
                 .switchIfEmpty(ServerResponse.notFound().build())
-                .onErrorResume(e -> {
-                    LOGGER.error("Error processing request: {}", e.getMessage());
-                    return ServerResponse.status(500).bodyValue("Internal Server Error");
-                });
+                .onErrorResume(Mono::error);
     }
 
 
@@ -51,16 +48,13 @@ public class ProductHandler {
         return serverRequest.bodyToMono(Product.class)
                 .flatMap(product -> {
                     LOGGER.info("Received product details: {}", product);
-                    return productService.updateProduct(product);
+                    return productService.updateProduct(product).onErrorResume(Mono::error);
                 })
                 .flatMap(savedProduct -> {
                     LOGGER.info("Saved product details: {}", savedProduct);
                     return ServerResponse.ok().bodyValue(savedProduct);
-                })
-                .onErrorResume(e -> {
-                    LOGGER.error("Error processing request: {}", e.getMessage());
-                    return ServerResponse.status(500).bodyValue("Internal Server Error");
                 });
+
     }
 
     public Mono<ServerResponse> deleteProductById(final ServerRequest serverRequest) {
@@ -68,9 +62,11 @@ public class ProductHandler {
         return productService.deleteProductById(Long.parseLong(serverRequest.pathVariable("id")))
                 .flatMap(product -> ServerResponse.ok().bodyValue(product))
                 .switchIfEmpty(ServerResponse.notFound().build())
-                .onErrorResume(e -> {
-                    LOGGER.error("Error processing request: {}", e.getMessage());
-                    return ServerResponse.status(500).bodyValue("Internal Server Error");
-                });
+                .onErrorResume(Mono::error);
+    }
+
+    public Mono<ServerResponse> getAllProducts(ServerRequest request){
+        return productService.getAllProducts()
+        .flatMap(product -> ServerResponse.ok().bodyValue(product));
     }
 }

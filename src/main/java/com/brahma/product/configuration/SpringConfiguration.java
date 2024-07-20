@@ -1,8 +1,10 @@
 package com.brahma.product.configuration;
 
 import com.brahma.product.handler.ProductHandler;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -14,15 +16,15 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Component
-@NoArgsConstructor
 public class SpringConfiguration {
 
 
     @Autowired
     private  ProductHandler productHandler;
 
-    public SpringConfiguration(final ProductHandler productHandler){
-        this.productHandler = productHandler;
+    @Bean
+    public WebProperties.Resources resources(){
+        return new WebProperties.Resources();
     }
 
     @Bean
@@ -31,6 +33,7 @@ public class SpringConfiguration {
         return route(POST(CREATE_PRODUCT_PATH).and(accept(MediaType.APPLICATION_NDJSON)), productHandler::createProduct)
                 .andRoute(GET(GET_PRODUCT_BY_ID_PATH),productHandler::getProductById)
                 .andRoute(PUT(UPDATE_PRODUCT_PATH).and(accept(MediaType.APPLICATION_NDJSON)), productHandler::updateProduct)
-                .andRoute(DELETE(DELETE_PRODUCT_PATH), productHandler::updateProduct);
+                .andRoute(DELETE(DELETE_PRODUCT_PATH), productHandler::deleteProductById)
+                .andRoute(GET(GET_ALL_PRODUCT_PATH), productHandler::getAllProducts);
     }
 }
