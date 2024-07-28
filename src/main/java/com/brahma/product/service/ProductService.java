@@ -58,7 +58,7 @@ public class ProductService {
             return Mono.error(new ProductAppException("Exception occurred during fetching records from DB"));
         }
         Product product = Product.builder().build();
-        if (byId.get()==null) {
+        if (byId.get()!=null) {
             product = byId.get();
         }else{
             LOGGER.info("Product not found with the provided id");
